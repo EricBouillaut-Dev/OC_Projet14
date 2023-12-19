@@ -1,35 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import states from "../datas/states";
-import FormValidator from "../components/FormValidator";
 
 function Home({ useBackend }) {
   const [modalMessage, setModalMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [emptyFields, setEmptyFields] = useState({});
+  const [ErrorFields, setErrorFields] = useState({});
+  const [employee, setEmployee] = useState({
+    firstName: "John",
+    lastName: "Smith",
+    dateOfBirth: "01/01/1970",
+    startDate: "01/01/2000",
+    department: "Sales",
+    street: "232 Park Avenue",
+    city: "Houston",
+    state: "TX",
+    zipCode: 77002,
+  });
+
+  const calculateAge = (dateOfBirth) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  useEffect(() => {
+    const newErrorFields = {};
+    Object.keys(employee).forEach((key) => {
+      if (key === "dateOfBirth") {
+        const age = calculateAge(employee.dateOfBirth);
+        newErrorFields[key] = !employee.dateOfBirth || age < 18;
+      } else {
+        newErrorFields[key] = employee[key].length < 2;
+      }
+    });
+    setErrorFields(newErrorFields);
+  }, [employee]);
+
+  const handleChange = (event) => {
+    setEmployee({ ...employee, [event.target.id]: event.target.value });
+  };
+
+  const userExists = (newEmployee) => {
+    const userKey = Object.values(newEmployee).join("");
+    const employees = JSON.parse(localStorage.getItem("employees")) || [];
+    return employees.some(
+      (employee) => Object.values(employee).join("") === userKey
+    );
+  };
 
   const handleSaveEmployee = () => {
-    const employee = {
-      firstName: document.getElementById("first-name").value,
-      lastName: document.getElementById("last-name").value,
-      dateOfBirth: document.getElementById("date-of-birth").value,
-      startDate: document.getElementById("start-date").value,
-      department: document.getElementById("department").value,
-      street: document.getElementById("street").value,
-      city: document.getElementById("city").value,
-      state: document.getElementById("state").value,
-      zipCode: document.getElementById("zip-code").value,
-    };
-
-    const newEmptyFields = FormValidator({ values: employee });
-    setEmptyFields(newEmptyFields);
-    const allFieldsFilled = Object.values(newEmptyFields).every(
-      (value) => !value
-    );
+    const allFieldsFilled = !Object.values(ErrorFields).some((value) => value);
 
     if (allFieldsFilled) {
+      if (userExists(employee)) {
+        setModalMessage(
+          `L'utilisateur ${employee.firstName} ${employee.lastName} existe déjà.`
+        );
+        setIsError(true);
+        setShowModal(true);
+        return;
+      }
+
       if (useBackend) {
         fetch("http://localhost:3001/api/users", {
           method: "POST",
@@ -65,8 +104,14 @@ function Home({ useBackend }) {
         setModalMessage(
           `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
         );
+        setIsError(false);
         setShowModal(true);
       }
+    } else {
+      // Show error message if all fields are not filled
+      setModalMessage("Veuillez remplir correctement tous les champs.");
+      setIsError(true);
+      setShowModal(true);
     }
   };
 
@@ -87,125 +132,137 @@ function Home({ useBackend }) {
         <Link to="/employee-list">View Current Employees</Link>
         <h2>Create Employee</h2>
         <form id="create-employee">
-          <label htmlFor="first-name">First Name</label>
+          <label htmlFor="firstName">First Name</label>
           <input
             type="text"
-            id="first-name"
-            className={emptyFields.firstName ? "empty-field" : ""}
+            id="firstName"
+            value={employee.firstName}
+            onChange={handleChange}
+            className={ErrorFields.firstName ? "error-field" : ""}
           />
-          {emptyFields.firstName && (
-            <>
-              <br />
-              <span className="error-message">
-                Ce champs ne doit pas être vide
-              </span>
-            </>
+          {ErrorFields.firstName && (
+            <div className="error-message">
+              Le prénom doit contenir au moins 2 caractères.
+            </div>
           )}
-          <label htmlFor="last-name">Last Name</label>
+
+          <label htmlFor="lastName">Last Name</label>
           <input
             type="text"
-            id="last-name"
-            className={emptyFields.lastName ? "empty-field" : ""}
+            id="lastName"
+            value={employee.lastName}
+            onChange={handleChange}
+            className={ErrorFields.lastName ? "error-field" : ""}
           />
-          {emptyFields.lastName && (
-            <>
-              <br />
-              <span className="error-message">
-                Ce champ ne doit pas être vide
-              </span>
-            </>
+          {ErrorFields.lastName && (
+            <div className="error-message">
+              Le nom doit contenir au moins 2 caractères.
+            </div>
           )}
-          <label htmlFor="date-of-birth">Date of Birth</label>
+
+          <label htmlFor="dateOfBirth">Date of Birth</label>
           <input
-            id="date-of-birth"
             type="date"
-            className={emptyFields.dateOfBirth ? "empty-field" : ""}
+            id="dateOfBirth"
+            value={employee.dateOfBirth}
+            onChange={handleChange}
+            className={ErrorFields.dateOfBirth ? "error-field" : ""}
           />
-          {emptyFields.dateOfBirth && (
-            <>
-              <br />
-              <span className="error-message">
-                Ce champ ne doit pas être vide
-              </span>
-            </>
+          {ErrorFields.dateOfBirth && (
+            <div className="error-message">
+              {employee.dateOfBirth
+                ? "L'utilisateur doit être majeur (18 ans ou plus)."
+                : "Veuillez sélectionner une date de naissance."}
+            </div>
           )}
-          <label htmlFor="start-date">Start Date</label>
+
+          <label htmlFor="startDate">Start Date</label>
           <input
-            id="start-date"
             type="date"
-            className={emptyFields.startDate ? "empty-field" : ""}
+            id="startDate"
+            value={employee.startDate}
+            onChange={handleChange}
+            className={ErrorFields.startDate ? "error-field" : ""}
           />
-          {emptyFields.startDate && (
-            <>
-              <br />
-              <span className="error-message">
-                Ce champ ne doit pas être vide
-              </span>
-            </>
+          {ErrorFields.startDate && (
+            <div className="error-message">
+              Veuillez sélectionner une date de début.
+            </div>
           )}
+
           <fieldset className="address">
             <legend>Address</legend>
+
             <label htmlFor="street">Street</label>
             <input
-              id="street"
               type="text"
-              className={emptyFields.street ? "empty-field" : ""}
+              id="street"
+              value={employee.street}
+              onChange={handleChange}
+              className={ErrorFields.street ? "error-field" : ""}
             />
-            {emptyFields.street && (
-              <>
-                <br />
-                <span className="error-message">
-                  Ce champ ne doit pas être vide
-                </span>
-              </>
+            {ErrorFields.street && (
+              <div className="error-message">
+                L'adresse doit contenir au moins 2 caractères.
+              </div>
             )}
+
             <label htmlFor="city">City</label>
             <input
-              id="city"
               type="text"
-              className={emptyFields.city ? "empty-field" : ""}
+              id="city"
+              value={employee.city}
+              onChange={handleChange}
+              className={ErrorFields.city ? "error-field" : ""}
             />
-            {emptyFields.city && (
-              <>
-                <br />
-                <span className="error-message">
-                  Ce champ ne doit pas être vide
-                </span>
-              </>
+            {ErrorFields.city && (
+              <div className="error-message">
+                La ville doit contenir au moins 2 caractères.
+              </div>
             )}
+
             <label htmlFor="state">State</label>
-            <select id="state">
+            <select id="state" value={employee.state} onChange={handleChange}>
               {states.map((state) => (
                 <option key={state.abbreviation} value={state.abbreviation}>
                   {state.name}
                 </option>
               ))}
             </select>
-            <label htmlFor="zip-code">Zip Code</label>
+
+            <label htmlFor="zipCode">Zip Code</label>
             <input
-              id="zip-code"
               type="number"
-              className={emptyFields.zipCode ? "empty-field" : ""}
+              id="zipCode"
+              value={employee.zipCode}
+              onChange={handleChange}
+              className={ErrorFields.zipCode ? "error-field" : ""}
             />
-            {emptyFields.zipCode && (
-              <>
-                <br />
-                <span className="error-message">
-                  Ce champ ne doit pas être vide
-                </span>
-              </>
+            {ErrorFields.zipCode && (
+              <div className="error-message">
+                Le code postal doit contenir au moins 2 chiffres.
+              </div>
             )}
           </fieldset>
+
           <label htmlFor="department">Department</label>
-          <select id="department">
-            <option>Sales</option>
-            <option>Marketing</option>
-            <option>Engineering</option>
-            <option>Human Resources</option>
-            <option>Legal</option>
+          <select
+            id="department"
+            value={employee.department}
+            onChange={handleChange}
+          >
+            {/* Options de départements, ajuster selon les données disponibles */}
+            <option value="Sales">Sales</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Human Resources">Human Resources</option>
+            <option value="Legal">Legal</option>
           </select>
+
+          <button type="button" onClick={handleSaveEmployee}>
+            Save
+          </button>
         </form>
-        <button onClick={handleSaveEmployee}>Save</button>
       </div>
       {showModal && (
         <div className="modal">

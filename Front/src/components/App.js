@@ -3,9 +3,19 @@ import Home from "../pages/Home";
 import EmployeeList from "../pages/Employee-list";
 import "../css/app.css";
 import Error from "../pages/Error";
+import mockUsers from "../datas/mock-users";
 
 function App() {
   const useBackend = true;
+
+  if (!useBackend) {
+    const localData = localStorage.getItem("employees");
+    if (!localData) {
+      localStorage.setItem("employees", JSON.stringify(mockUsers));
+    }
+  } else {
+    localStorage.removeItem("employees");
+  }
 
   return (
     <div>

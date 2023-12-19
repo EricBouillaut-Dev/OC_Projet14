@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import mockUsers from "../datas/mock-users";
 
 const pageSizeOptions = [10, 25, 50, 100];
 
@@ -23,12 +22,7 @@ const EmployeeList = ({ useBackend }) => {
 
   const loadFromLocalStorage = () => {
     const localData = localStorage.getItem("employees");
-    if (localData) {
-      setEmployees(JSON.parse(localData));
-    } else {
-      localStorage.setItem("employees", JSON.stringify(mockUsers));
-      setEmployees(mockUsers);
-    }
+    setEmployees(JSON.parse(localData));
   };
 
   useEffect(() => {

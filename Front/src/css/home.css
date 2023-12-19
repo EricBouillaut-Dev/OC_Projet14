@@ -22,15 +22,17 @@ label {
     margin-top: 10px;
 }
 
-.empty-field {
-  border: 1px solid red;
-}
-
 .error-message{
   color: red;
   font-size: 10px;
 }
-
+.error-field {
+  border: 1px solid red;
+}
+.error-field:focus {
+  border: 2px solid red;
+  outline: none;
+}
 .modal {
     display: flex;
     align-items: center;
