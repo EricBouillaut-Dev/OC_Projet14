@@ -1,23 +1,35 @@
 const { User } = require("../db/sequelize");
+const { ValidationError, UniqueConstraintError } = require("sequelize");
 
 function formatDate(dateString) {
-  if (!dateString) return ""; // Retourne une chaîne vide si la date est invalide ou manquante
+  if (!dateString) return "";
   const date = new Date(dateString);
-  if (isNaN(date.getTime())) return ""; // Vérifie si la date est valide
-  return date.toISOString().split("T")[0]; // Formatte la date au format YYYY-MM-DD
+  if (isNaN(date.getTime())) return "";
+  return date.toISOString().split("T")[0];
+}
+
+function isDateValid(dateString) {
+  if (!dateString) return false;
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
 }
 
 module.exports = (app) => {
   app.post("/api/users", async (req, res) => {
     try {
-      // Formattez les dates avant de les concaténer
+      if (
+        !isDateValid(req.body.dateOfBirth) ||
+        !isDateValid(req.body.startDate)
+      ) {
+        const message = "Une ou plusieurs dates fournies sont invalides.";
+        return res.status(400).json({ message });
+      }
+
       const formattedDateOfBirth = formatDate(req.body.dateOfBirth);
       const formattedStartDate = formatDate(req.body.startDate);
 
-      // Créez une clé unique en incluant les dates formatées
       const newUserKey = `${req.body.firstName}${req.body.lastName}${formattedDateOfBirth}${formattedStartDate}${req.body.department}${req.body.street}${req.body.city}${req.body.state}${req.body.zipCode}`;
 
-      // Récupérer tous les utilisateurs et vérifier les doublons
       const existingUsers = await User.findAll();
 
       const isDuplicate = existingUsers.some((user) => {
@@ -41,8 +53,16 @@ module.exports = (app) => {
       const message = `L'utilisateur ${req.body.firstName} ${req.body.lastName} a bien été créé.`;
       res.json({ message, data: user });
     } catch (error) {
-      console.log(error);
-      // Gérer les autres erreurs ici
+      if (error instanceof ValidationError) {
+        return res
+          .status(400)
+          .json({ message: error.message, errors: error.errors });
+      } else if (error instanceof UniqueConstraintError) {
+        return res.status(409).json({ message: "L'utilisateur existe déjà." });
+      } else {
+        console.error(error);
+        return res.status(500).json({ message: "Erreur interne du serveur" });
+      }
     }
   });
 };

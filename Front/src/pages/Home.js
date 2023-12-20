@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import states from "../datas/states";
+import Modal from "../components/Modal";
+import EmployeeForm from "../components/EmployeeForm";
 
 function Home({ useBackend }) {
   const [modalMessage, setModalMessage] = useState("");
@@ -11,8 +12,8 @@ function Home({ useBackend }) {
   const [employee, setEmployee] = useState({
     firstName: "John",
     lastName: "Smith",
-    dateOfBirth: "01/01/1970",
-    startDate: "01/01/2000",
+    dateOfBirth: "2020-01-01",
+    startDate: "2020-01-01",
     department: "Sales",
     street: "232 Park Avenue",
     city: "Houston",
@@ -43,10 +44,6 @@ function Home({ useBackend }) {
     });
     setErrorFields(newErrorFields);
   }, [employee]);
-
-  const handleChange = (event) => {
-    setEmployee({ ...employee, [event.target.id]: event.target.value });
-  };
 
   const userExists = (newEmployee) => {
     const userKey = Object.values(newEmployee).join("");
@@ -131,153 +128,24 @@ function Home({ useBackend }) {
       <div className="container">
         <Link to="/employee-list">View Current Employees</Link>
         <h2>Create Employee</h2>
-        <form id="create-employee">
-          <label htmlFor="firstName">First Name</label>
-          <input
-            type="text"
-            id="firstName"
-            value={employee.firstName}
-            onChange={handleChange}
-            className={ErrorFields.firstName ? "error-field" : ""}
-          />
-          {ErrorFields.firstName && (
-            <div className="error-message">
-              Le prénom doit contenir au moins 2 caractères.
-            </div>
-          )}
-
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            type="text"
-            id="lastName"
-            value={employee.lastName}
-            onChange={handleChange}
-            className={ErrorFields.lastName ? "error-field" : ""}
-          />
-          {ErrorFields.lastName && (
-            <div className="error-message">
-              Le nom doit contenir au moins 2 caractères.
-            </div>
-          )}
-
-          <label htmlFor="dateOfBirth">Date of Birth</label>
-          <input
-            type="date"
-            id="dateOfBirth"
-            value={employee.dateOfBirth}
-            onChange={handleChange}
-            className={ErrorFields.dateOfBirth ? "error-field" : ""}
-          />
-          {ErrorFields.dateOfBirth && (
-            <div className="error-message">
-              {employee.dateOfBirth
-                ? "L'utilisateur doit être majeur (18 ans ou plus)."
-                : "Veuillez sélectionner une date de naissance."}
-            </div>
-          )}
-
-          <label htmlFor="startDate">Start Date</label>
-          <input
-            type="date"
-            id="startDate"
-            value={employee.startDate}
-            onChange={handleChange}
-            className={ErrorFields.startDate ? "error-field" : ""}
-          />
-          {ErrorFields.startDate && (
-            <div className="error-message">
-              Veuillez sélectionner une date de début.
-            </div>
-          )}
-
-          <fieldset className="address">
-            <legend>Address</legend>
-
-            <label htmlFor="street">Street</label>
-            <input
-              type="text"
-              id="street"
-              value={employee.street}
-              onChange={handleChange}
-              className={ErrorFields.street ? "error-field" : ""}
-            />
-            {ErrorFields.street && (
-              <div className="error-message">
-                L'adresse doit contenir au moins 2 caractères.
-              </div>
-            )}
-
-            <label htmlFor="city">City</label>
-            <input
-              type="text"
-              id="city"
-              value={employee.city}
-              onChange={handleChange}
-              className={ErrorFields.city ? "error-field" : ""}
-            />
-            {ErrorFields.city && (
-              <div className="error-message">
-                La ville doit contenir au moins 2 caractères.
-              </div>
-            )}
-
-            <label htmlFor="state">State</label>
-            <select id="state" value={employee.state} onChange={handleChange}>
-              {states.map((state) => (
-                <option key={state.abbreviation} value={state.abbreviation}>
-                  {state.name}
-                </option>
-              ))}
-            </select>
-
-            <label htmlFor="zipCode">Zip Code</label>
-            <input
-              type="number"
-              id="zipCode"
-              value={employee.zipCode}
-              onChange={handleChange}
-              className={ErrorFields.zipCode ? "error-field" : ""}
-            />
-            {ErrorFields.zipCode && (
-              <div className="error-message">
-                Le code postal doit contenir au moins 2 chiffres.
-              </div>
-            )}
-          </fieldset>
-
-          <label htmlFor="department">Department</label>
-          <select
-            id="department"
-            value={employee.department}
-            onChange={handleChange}
-          >
-            {/* Options de départements, ajuster selon les données disponibles */}
-            <option value="Sales">Sales</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Human Resources">Human Resources</option>
-            <option value="Legal">Legal</option>
-          </select>
-
-          <button type="button" onClick={handleSaveEmployee}>
-            Save
-          </button>
-        </form>
+        <EmployeeForm
+          employee={employee}
+          ErrorFields={ErrorFields}
+          handleChange={(e) =>
+            setEmployee({ ...employee, [e.target.id]: e.target.value })
+          }
+        />
+        <button type="button" onClick={handleSaveEmployee}>
+          Save
+        </button>
       </div>
-      {showModal && (
-        <div className="modal">
-          <div
-            className={`modal-content ${
-              isError ? "modal-error" : "modal-success"
-            } ${isClosing ? "modal-exit" : ""}`}
-          >
-            <span className="close" onClick={closeModal}>
-              &times;
-            </span>
-            <p>{modalMessage}</p>
-          </div>
-        </div>
-      )}
+      <Modal
+        showModal={showModal}
+        isError={isError}
+        isClosing={isClosing}
+        modalMessage={modalMessage}
+        closeModal={closeModal}
+      />
     </div>
   );
 }
