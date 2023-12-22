@@ -1,0 +1,85 @@
+.employee-list-container, .employee-table-container {
+    width: 100%;
+    max-width: 1200px; /* ou toute autre largeur maximale appropriée */
+    margin: auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+.employee-table-container {
+    overflow-x: auto; /* Permettre le défilement horizontal seulement pour le tableau */
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1); /* Ombre pour le tableau */
+    max-width: 100%; /* Assurez-vous que le conteneur ne dépasse pas la largeur de la page */
+    margin: auto; /* Centrer le conteneur dans la page */
+  }
+  
+  .employee-table {
+    width: 100%; /* Assurez-vous que le tableau prenne la largeur complète de son conteneur */
+    max-width: none; /* Supprimer toute largeur maximale qui pourrait être appliquée */
+    border-collapse: collapse; /* Éliminer l'espacement entre les cellules */
+    /* ... autres styles pour th et td ... */
+  }
+  
+  /* Styles pour les entêtes de tableau et les cellules */
+  .employee-table th, .employee-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+  }
+  
+  /* Styles spécifiques pour les en-têtes de tableau cliquables pour le tri */
+  .employee-table th {
+    cursor: pointer; /* Ajout du curseur en forme de main pour indiquer la possibilité de tri */
+  }
+  
+  /* Styles pour les rangées zébrées du tableau */
+  .employee-table tbody tr:nth-child(odd) {
+    background-color: #e6e6e6;
+  }
+  
+  /* Styles pour la rangée d'en-tête du tableau */
+  .employee-table thead tr {
+    background-color: #fff;
+  }
+  
+  /* Styles pour les éléments de pagination et de recherche */
+  .search-and-size, .pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  /* Styles pour le champ de recherche */
+  .search-box input[type="text"] {
+    padding: 8px;
+    margin-left: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  /* Styles pour le sélecteur de taille de page */
+  .page-size-selector select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  /* Styles pour les boutons de pagination */
+  .pagination-container button {
+    padding: 8px 16px;
+    margin: 0 4px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Styles pour le bouton actif de la pagination */
+  .pagination-container button.active {
+    background-color: #ddd;
+    border-color: #ccc;
+  }
+
+  
