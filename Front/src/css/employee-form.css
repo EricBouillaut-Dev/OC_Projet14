@@ -1,0 +1,91 @@
+.employee-form-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .employee-form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0 10px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* margin-bottom: 10px; */
+  }
+  
+
+
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="date"],
+  .form-group input[type="number"],
+  .form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input.error-field,
+  .form-group select.error-field {
+    border-color: #e74c3c;
+  }
+  
+  .error-message {
+    color: #e74c3c;
+    margin-bottom: 10px;
+  }
+  
+  .address legend {
+    padding: 5px;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+  
+  .send-button {
+    display: block;
+    width: 150px;
+    padding: 10px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .send-button:hover {
+    background-color: #27ae60;
+  }
+  
+  @media (min-width: 768px) { /* Media query pour les écrans plus larges */
+    .form-group {
+      width: 48%; /* Les champs prennent 48% de la largeur sur les grands écrans */
+      margin-bottom: 10px;
+    }
+    .form-row{
+        margin: 10px;
+    }
+    .send-button {
+        margin-top: 20px;
+    }
+  }
+  

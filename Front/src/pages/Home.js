@@ -12,7 +12,7 @@ function Home({ useBackend }) {
   const [employee, setEmployee] = useState({
     firstName: "John",
     lastName: "Smith",
-    dateOfBirth: "2020-01-01",
+    dateOfBirth: "2000-01-01",
     startDate: "2020-01-01",
     department: "Sales",
     street: "232 Park Avenue",
@@ -127,7 +127,6 @@ function Home({ useBackend }) {
       </div>
       <div className="container">
         <Link to="/employee-list">View Current Employees</Link>
-        <h2>Create Employee</h2>
         <EmployeeForm
           employee={employee}
           ErrorFields={ErrorFields}
@@ -135,7 +134,11 @@ function Home({ useBackend }) {
             setEmployee({ ...employee, [e.target.id]: e.target.value })
           }
         />
-        <button type="button" onClick={handleSaveEmployee}>
+        <button
+          className="send-button"
+          type="button"
+          onClick={handleSaveEmployee}
+        >
           Save
         </button>
       </div>

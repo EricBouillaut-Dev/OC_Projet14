@@ -59,19 +59,19 @@ const DataTablePlugin = ({ data, columns }) => {
     return columns.map((column) => (
       <th key={column.data} onClick={() => handleSort(column.data)}>
         {column.title}
+        {sortField === column.data && (
+          <i
+            className={`fas fa-sort-${sortOrder === "asc" ? "up" : "down"}`}
+          ></i>
+        )}
+        {sortField !== column.data && <i className="fas fa-sort"></i>}
       </th>
     ));
   };
 
   const isDate = (value) => {
-    if (Object.prototype.toString.call(value) === "[object Date]") {
-      return !isNaN(value.getTime());
-    }
-    if (typeof value === "string" || typeof value === "number") {
-      var date = new Date(value);
-      return !isNaN(date.getTime());
-    }
-    return false;
+    const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+    return dateTimeRegex.test(value);
   };
 
   const renderPaginationButtons = () => {
@@ -161,16 +161,18 @@ const DataTablePlugin = ({ data, columns }) => {
           />
         </div>
       </div>
-      <div className="employee-table-container">
-        <table className="employee-table">
+      <div className="item-table-container">
+        <table className="item-table">
           <thead>
             <tr>{renderHeader()}</tr>
           </thead>
           <tbody>
-            {employeesToShow.map((employee) => (
-              <tr key={employee.id}>
+            {employeesToShow.map((employee, index) => (
+              <tr key={employee.id || `itemId-${index}`}>
                 {columns.map((column) => (
-                  <td key={`${employee.id}-${column.data}`}>
+                  <td
+                    key={`${employee.id || `itemId-${index}`}-${column.data}`}
+                  >
                     {isDate(employee[column.data])
                       ? new Date(employee[column.data]).toLocaleDateString()
                       : employee[column.data]}
