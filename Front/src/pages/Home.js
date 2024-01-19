@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Modal from "../components/Modal";
 import EmployeeForm from "../components/EmployeeForm";
+import CalculateAge from "../utils/CalculateAge";
+import HandleSaveEmployee from "../components/HandleSaveEmployee";
 
 function Home({ useBackend }) {
   const [modalMessage, setModalMessage] = useState("");
@@ -21,22 +23,11 @@ function Home({ useBackend }) {
     zipCode: 77002,
   });
 
-  const calculateAge = (dateOfBirth) => {
-    const today = new Date();
-    const birthDate = new Date(dateOfBirth);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
   useEffect(() => {
     const newErrorFields = {};
     Object.keys(employee).forEach((key) => {
       if (key === "dateOfBirth") {
-        const age = calculateAge(employee.dateOfBirth);
+        const age = CalculateAge(employee.dateOfBirth);
         newErrorFields[key] = !employee.dateOfBirth || age < 18;
       } else {
         newErrorFields[key] = employee[key].length < 2;
@@ -44,73 +35,6 @@ function Home({ useBackend }) {
     });
     setErrorFields(newErrorFields);
   }, [employee]);
-
-  const userExists = (newEmployee) => {
-    const userKey = Object.values(newEmployee).join("");
-    const employees = JSON.parse(localStorage.getItem("employees")) || [];
-    return employees.some(
-      (employee) => Object.values(employee).join("") === userKey
-    );
-  };
-
-  const handleSaveEmployee = () => {
-    const allFieldsFilled = !Object.values(ErrorFields).some((value) => value);
-
-    if (allFieldsFilled) {
-      if (userExists(employee)) {
-        setModalMessage(
-          `L'utilisateur ${employee.firstName} ${employee.lastName} existe déjà.`
-        );
-        setIsError(true);
-        setShowModal(true);
-        return;
-      }
-
-      if (useBackend) {
-        fetch("http://localhost:3001/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(employee),
-        })
-          .then((response) => {
-            const isError = !response.ok;
-            setIsError(isError);
-            return response.json().then((data) => ({ data, isError }));
-          })
-          .then(({ data, isError }) => {
-            setModalMessage(
-              isError
-                ? data.message
-                : `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
-            );
-            setShowModal(true);
-          })
-          .catch(() => {
-            setModalMessage(
-              "Une erreur est survenue lors de la communication avec le Backend."
-            );
-            setIsError(true);
-            setShowModal(true);
-          });
-      } else {
-        const employees = JSON.parse(localStorage.getItem("employees")) || [];
-        employees.push(employee);
-        localStorage.setItem("employees", JSON.stringify(employees));
-        setModalMessage(
-          `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
-        );
-        setIsError(false);
-        setShowModal(true);
-      }
-    } else {
-      // Show error message if all fields are not filled
-      setModalMessage("Veuillez remplir correctement tous les champs.");
-      setIsError(true);
-      setShowModal(true);
-    }
-  };
 
   const closeModal = () => {
     setIsClosing(true);
@@ -134,13 +58,14 @@ function Home({ useBackend }) {
             setEmployee({ ...employee, [e.target.id]: e.target.value })
           }
         />
-        <button
-          className="send-button"
-          type="button"
-          onClick={handleSaveEmployee}
-        >
-          Save
-        </button>
+        <HandleSaveEmployee
+          employee={employee}
+          ErrorFields={ErrorFields}
+          setModalMessage={setModalMessage}
+          setIsError={setIsError}
+          setShowModal={setShowModal}
+          useBackend={useBackend}
+        />
       </div>
       <Modal
         showModal={showModal}
