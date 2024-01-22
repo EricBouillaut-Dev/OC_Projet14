@@ -1,24 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
+import AppContext from "../components/AppContext";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
 import DataTablePlugin from "../components/plugin/DataTablePlugin";
 
-const EmployeeList = ({ useBackend }) => {
-  const [employees, setEmployees] = useState([]);
-
-  const loadEmployees = async () => {
-    try {
-      const response = await fetch("http://localhost:3001/api/users");
-      const data = await response.json();
-      setEmployees(data.data);
-    } catch (error) {
-      console.error("Erreur lors du chargement depuis le backend", error);
-    }
-  };
-
-  useEffect(() => {
-    useBackend
-      ? loadEmployees()
-      : setEmployees(JSON.parse(localStorage.getItem("employees")));
-  }, [useBackend]);
+const EmployeeList = () => {
+  const { employees } = useContext(AppContext);
 
   const columns = [
     { title: "First Name", data: "firstName" },
@@ -33,9 +20,15 @@ const EmployeeList = ({ useBackend }) => {
   ];
 
   return (
-    <div className="employee-list-container">
-      <h1 className="title">Current Employees</h1>
-      <DataTablePlugin data={employees} columns={columns} />
+    <div className="home-container">
+      <Header />
+      <main className="home-body">
+        <div className="employee-list-container">
+          <h1 className="title">Current Employees</h1>
+          <DataTablePlugin data={employees} columns={columns} />
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import AppContext from "./AppContext";
 
 const HandleSaveEmployee = ({
   employee,
@@ -6,15 +7,18 @@ const HandleSaveEmployee = ({
   setModalMessage,
   setIsError,
   setShowModal,
-  useBackend,
 }) => {
+  const { useBackend, employees, addEmployeeToContext } =
+    useContext(AppContext); // Use AppContext
+
   const userExists = (newEmployee) => {
-    const userKey = Object.values(newEmployee).join("");
-    const employees = JSON.parse(localStorage.getItem("employees")) || [];
-    return employees.some((emp) => Object.values(emp).join("") === userKey);
+    const userKey = Object.values(newEmployee).join("").toLowerCase();
+    return employees.some(
+      (emp) => Object.values(emp).join("").toLowerCase() === userKey
+    );
   };
 
-  const saveEmployee = () => {
+  const saveEmployee = async () => {
     const allFieldsFilled = !Object.values(ErrorFields).some((value) => value);
 
     if (allFieldsFilled) {
@@ -28,52 +32,41 @@ const HandleSaveEmployee = ({
       }
 
       if (useBackend) {
-        fetch("http://localhost:3001/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(employee),
-        })
-          .then((response) => {
-            const isError = !response.ok;
-            setIsError(isError);
-            return response.json().then((data) => ({ data, isError }));
-          })
-          .then(({ data, isError }) => {
-            setModalMessage(
-              isError
-                ? data.message
-                : `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
-            );
-            setShowModal(true);
-          })
-          .catch(() => {
-            setModalMessage(
-              "Une erreur est survenue lors de la communication avec le Backend."
-            );
-            setIsError(true);
-            setShowModal(true);
+        try {
+          const response = await fetch("http://localhost:3001/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(employee),
           });
+
+          const isError = !response.ok;
+          setIsError(isError);
+          const data = await response.json();
+          setModalMessage(data.message);
+          setShowModal(true);
+
+          if (!isError) {
+            addEmployeeToContext(employee);
+          }
+        } catch (error) {
+          console.error(error);
+          console.log("Erreur lors de la sauvegarde");
+        }
       } else {
-        const employees = JSON.parse(localStorage.getItem("employees")) || [];
-        employees.push(employee);
-        localStorage.setItem("employees", JSON.stringify(employees));
+        addEmployeeToContext(employee);
         setModalMessage(
           `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
         );
         setIsError(false);
         setShowModal(true);
       }
-    } else {
-      setModalMessage("Veuillez remplir correctement tous les champs.");
-      setIsError(true);
-      setShowModal(true);
     }
   };
 
   return (
-    <button className="send-button" type="button" onClick={saveEmployee}>
+    <button className="save-button" type="button" onClick={saveEmployee}>
       Save
     </button>
   );

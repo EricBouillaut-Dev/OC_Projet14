@@ -1,0 +1,45 @@
+.header-container {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-link {
+    text-decoration: none;
+    color: #25c9e6;
+    display: flex;
+    align-items: center; /* Cela garantira que le texte est aligné verticalement avec les liens */
+  }
+  
+  .header-nav {
+    display: flex;
+    align-items: center; /* Aligner les liens avec le titre */
+  }
+  
+  .nav-link {
+    position: relative; /* Position relative pour le pseudo-élément after */
+    margin-left: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding-bottom: 2px; /* Espace pour le trait */
+  }
+  
+  .nav-link:hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-color: #333; /* Couleur du trait */
+  }
+  
+  .header-link h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }

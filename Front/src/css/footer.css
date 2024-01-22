@@ -1,0 +1,16 @@
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #414141;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 15px;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 30px;
+  }
+  
+  
