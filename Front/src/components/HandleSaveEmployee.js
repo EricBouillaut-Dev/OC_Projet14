@@ -20,6 +20,12 @@ const HandleSaveEmployee = ({
 
   const saveEmployee = async () => {
     const allFieldsFilled = !Object.values(ErrorFields).some((value) => value);
+    if (!allFieldsFilled) {
+      setModalMessage("Veuillez remplir correctement tous les champs.");
+      setIsError(true);
+      setShowModal(true);
+      return;
+    }
 
     if (allFieldsFilled) {
       if (userExists(employee)) {
@@ -31,6 +37,21 @@ const HandleSaveEmployee = ({
         return;
       }
 
+      console.log("STARTDATE:", employee.startDate);
+
+      const startDateParts = employee.startDate.split("-");
+      const newStartDate = `${startDateParts[2]}/${startDateParts[1]}/${startDateParts[0]}`;
+
+      const dateOfBirthParts = employee.dateOfBirth.split("-");
+      const newDateOfBirth = `${dateOfBirthParts[2]}/${dateOfBirthParts[1]}/${dateOfBirthParts[0]}`;
+
+      // Convertir les dates en chaînes de caractères
+      const employeeToSave = {
+        ...employee,
+        startDate: newStartDate,
+        dateOfBirth: newDateOfBirth,
+      };
+
       if (useBackend) {
         try {
           const response = await fetch("http://localhost:3001/api/users", {
@@ -38,7 +59,7 @@ const HandleSaveEmployee = ({
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(employee),
+            body: JSON.stringify(employeeToSave),
           });
 
           const isError = !response.ok;
@@ -48,14 +69,14 @@ const HandleSaveEmployee = ({
           setShowModal(true);
 
           if (!isError) {
-            addEmployeeToContext(employee);
+            addEmployeeToContext(employeeToSave);
           }
         } catch (error) {
           console.error(error);
           console.log("Erreur lors de la sauvegarde");
         }
       } else {
-        addEmployeeToContext(employee);
+        addEmployeeToContext(employeeToSave);
         setModalMessage(
           `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
         );

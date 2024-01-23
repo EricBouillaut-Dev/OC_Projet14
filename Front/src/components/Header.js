@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -8,12 +8,22 @@ const Header = () => {
         <h2>HRnet</h2>
       </Link>
       <nav className="header-nav">
-        <Link to="/employee-form" className="nav-link">
+        <NavLink
+          to="/employee-form"
+          className={({ isActive }) =>
+            isActive ? "nav-link active-link" : "nav-link"
+          }
+        >
           Add
-        </Link>
-        <Link to="/employee-list" className="nav-link">
+        </NavLink>
+        <NavLink
+          to="/employee-list"
+          className={({ isActive }) =>
+            isActive ? "nav-link active-link" : "nav-link"
+          }
+        >
           View
-        </Link>
+        </NavLink>
       </nav>
     </header>
   );

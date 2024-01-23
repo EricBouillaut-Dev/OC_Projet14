@@ -13,15 +13,15 @@ function EmployeeForm() {
   const [isClosing, setIsClosing] = useState(false);
   const [ErrorFields, setErrorFields] = useState({});
   const [employee, setEmployee] = useState({
-    firstName: "",
-    lastName: "",
+    firstName: "Patrick",
+    lastName: "Ward",
     dateOfBirth: "",
     startDate: "",
     department: "",
-    street: "",
-    city: "",
+    street: "160 Michael Garden",
+    city: "Singhberg",
     state: "",
-    zipCode: "",
+    zipCode: "65578",
   });
 
   useEffect(() => {
@@ -34,6 +34,14 @@ function EmployeeForm() {
         newErrorFields[key] = !employee[key] || employee[key].length < 2;
       }
     });
+
+    // Gestion de l'erreur pour le champ 'state'
+    newErrorFields.state = !employee.state || employee.state === "Select";
+
+    // Gestion de l'erreur pour le champ 'department'
+    newErrorFields.department =
+      !employee.department || employee.department === "Select";
+
     setErrorFields(newErrorFields);
   }, [employee]);
 
@@ -130,14 +138,20 @@ function EmployeeForm() {
                     id="department"
                     value={employee.department}
                     onChange={handleChange}
+                    className={ErrorFields.department ? "error-field" : ""}
                   >
-                    <option value="">Select</option>
+                    <option value="Select">Select</option>
                     <option value="Sales">Sales</option>
                     <option value="Marketing">Marketing</option>
                     <option value="Engineering">Engineering</option>
                     <option value="Human Resources">Human Resources</option>
                     <option value="Legal">Legal</option>
                   </select>
+                  {ErrorFields.department && (
+                    <div className="error-message">
+                      Veuillez sélectionner un département.
+                    </div>
+                  )}
                 </div>
               </div>
               <fieldset className="address">
@@ -181,8 +195,9 @@ function EmployeeForm() {
                       id="state"
                       value={employee.state}
                       onChange={handleChange}
+                      className={ErrorFields.state ? "error-field" : ""}
                     >
-                      <option value="">Select</option>
+                      <option value="Select">Select</option>
                       {states.map((state) => (
                         <option
                           key={state.abbreviation}
@@ -192,6 +207,11 @@ function EmployeeForm() {
                         </option>
                       ))}
                     </select>
+                    {ErrorFields.state && (
+                      <div className="error-message">
+                        Veuillez sélectionner un état.
+                      </div>
+                    )}
                   </div>
                   <div className="form-group">
                     <label htmlFor="zipCode">Code Postal *</label>

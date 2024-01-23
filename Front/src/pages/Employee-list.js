@@ -6,7 +6,6 @@ import DataTablePlugin from "../components/plugin/DataTablePlugin";
 
 const EmployeeList = () => {
   const { employees } = useContext(AppContext);
-
   const columns = [
     { title: "First Name", data: "firstName" },
     { title: "Last Name", data: "lastName" },
