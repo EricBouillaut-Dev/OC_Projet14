@@ -1,42 +1,46 @@
+/* Container for the table */
 .item-table-container {
   font-size: 0.95rem;
   width: 100%;
   overflow-x: auto;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Ajouter une légère ombre autour du tableau */
-  border: 1px solid #ddd; /* Ajouter une bordure autour du tableau */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a light shadow around the table */
+  border: 1px solid #ddd; /* Add a border around the table */
 }
 
+/* Styles for the table */
 .item-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
 }
 
+/* Table header and table data cells */
 .item-table th,
 .item-table td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-  white-space: nowrap; /* Empêcher le texte de passer à la ligne */
-  overflow: hidden; /* Cacher le débordement de texte */
-  text-overflow: ellipsis; /* Ajouter des points de suspension si le texte déborde */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide text overflow */
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
 }
 
+/* Table header styles */
 .item-table th {
   background-color: #f9f9f9;
   cursor: pointer;
 }
 
-/* Ajouter des bandes zébrées sur les lignes du tableau pour améliorer la lisibilité */
+/* Add zebra stripes for table rows for better readability */
 .item-table tr:nth-child(odd) {
   background-color: #f2f2f2;
 }
 
+/* Styles for the search and page size selector */
 .search-and-size {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
-  /* width: 105%; */
 }
 
 .page-size-selector,
@@ -53,18 +57,19 @@
   border-radius: 3px;
 }
 
+/* Styles for pagination container */
 .pagination-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
-  /* width: 105%; */
 }
 
 .pagination-container p {
   margin: 0;
 }
 
+/* Styles for navigation buttons */
 .bloc-nav {
   display: flex;
   align-items: center;
@@ -76,13 +81,15 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   cursor: pointer;
-  background-color: #fff; /* Fond blanc pour les boutons */
+  background-color: #fff; /* White background for buttons */
 }
 
+/* Hover effect on buttons */
 .bloc-nav button:hover {
   background-color: #50505050;
 }
 
+/* Disabled state for buttons */
 .bloc-nav button:disabled {
   color: #999;
   cursor: not-allowed;
@@ -92,23 +99,25 @@
   padding: 0 5px;
 }
 
+/* Arrow icons for sorting */
 .fas.fa-sort-up,
 .fas.fa-sort-down,
 .fas.fa-sort {
   margin-left: 5px;
 }
 
-/* Styles ajoutés pour la visibilité du texte dans les boutons */
+/* Text visibility on buttons */
 .bloc-nav button {
-  color: #333; /* Couleur du texte pour les boutons */
-  text-shadow: none; /* Enlever l'ombre du texte si elle est présente */
+  color: #333; /* Text color for buttons */
+  text-shadow: none; /* Remove text shadow if present */
 }
-/* Assurer la visibilité sur tous les fonds */
+
+/* Ensure visibility on all backgrounds */
 .bloc-nav button:disabled {
   background-color: #e1e1e1;
 }
 
-/* Style pour la pagination active */
+/* Style for active pagination button */
 .bloc-nav button.active {
   background-color: #007bff;
   color: white;

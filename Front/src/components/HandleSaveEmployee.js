@@ -3,10 +3,12 @@ import AppContext from "./AppContext";
 
 const HandleSaveEmployee = ({
   employee,
+  setEmployee,
   ErrorFields,
   setModalMessage,
   setIsError,
   setShowModal,
+  setTouched,
 }) => {
   const { useBackend, employees, addEmployeeToContext } =
     useContext(AppContext); // Use AppContext
@@ -18,39 +20,63 @@ const HandleSaveEmployee = ({
     );
   };
 
+  const resetForm = () => {
+    setEmployee({
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      startDate: "",
+      department: "",
+      street: "",
+      city: "",
+      state: "",
+      zipCode: "",
+    });
+    setTouched({});
+  };
+
   const saveEmployee = async () => {
     const allFieldsFilled = !Object.values(ErrorFields).some((value) => value);
     if (!allFieldsFilled) {
-      setModalMessage("Veuillez remplir correctement tous les champs.");
+      setModalMessage("Please fill in all fields correctly.");
       setIsError(true);
       setShowModal(true);
+      setTouched({
+        firstName: true,
+        lastName: true,
+        dateOfBirth: true,
+        startDate: true,
+        department: true,
+        street: true,
+        city: true,
+        state: true,
+        zipCode: true,
+      });
       return;
     }
 
     if (allFieldsFilled) {
-      if (userExists(employee)) {
-        setModalMessage(
-          `L'utilisateur ${employee.firstName} ${employee.lastName} existe déjà.`
-        );
-        setIsError(true);
-        setShowModal(true);
-        return;
-      }
-
-      console.log("STARTDATE:", employee.startDate);
-
       const startDateParts = employee.startDate.split("-");
       const newStartDate = `${startDateParts[2]}/${startDateParts[1]}/${startDateParts[0]}`;
 
       const dateOfBirthParts = employee.dateOfBirth.split("-");
       const newDateOfBirth = `${dateOfBirthParts[2]}/${dateOfBirthParts[1]}/${dateOfBirthParts[0]}`;
 
-      // Convertir les dates en chaînes de caractères
+      // Convert dates to strings
       const employeeToSave = {
         ...employee,
         startDate: newStartDate,
         dateOfBirth: newDateOfBirth,
       };
+
+      if (userExists(employeeToSave)) {
+        setModalMessage(
+          `The user ${employee.firstName} ${employee.lastName} already exists.`
+        );
+        setIsError(true);
+        setShowModal(true);
+        return;
+      }
 
       if (useBackend) {
         try {
@@ -70,18 +96,20 @@ const HandleSaveEmployee = ({
 
           if (!isError) {
             addEmployeeToContext(employeeToSave);
+            resetForm();
           }
         } catch (error) {
           console.error(error);
-          console.log("Erreur lors de la sauvegarde");
+          console.log("Error while saving");
         }
       } else {
         addEmployeeToContext(employeeToSave);
         setModalMessage(
-          `L'utilisateur ${employee.firstName} ${employee.lastName} a bien été créé.`
+          `The user ${employee.firstName} ${employee.lastName} has been created successfully.`
         );
         setIsError(false);
         setShowModal(true);
+        resetForm();
       }
     }
   };
