@@ -24,7 +24,11 @@ const EmployeeList = () => {
       <main className="home-body">
         <div className="employee-list-container">
           <h1 className="title">Current Employees</h1>
-          <DataTablePlugin data={employees} columns={columns} />
+          <DataTablePlugin
+            data={employees}
+            columns={columns}
+            dateFormat="dd/mm/yyyy"
+          />
         </div>
       </main>
       <Footer />

@@ -28,7 +28,6 @@ function EmployeeForm() {
   useEffect(() => {
     const newErrorFields = {};
     Object.keys(employee).forEach((key) => {
-      if (!touched[key]) return; // Ne pas vérifier les champs non touchés par l'utilisateur
       if (key === "dateOfBirth") {
         const age = CalculateAge(employee.dateOfBirth);
         newErrorFields[key] = !employee.dateOfBirth || age < 18;

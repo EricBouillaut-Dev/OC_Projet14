@@ -1,49 +1,54 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./DataTablePlugin.css";
 
-const DataTablePlugin = React.memo(({ data, columns }) => {
-  // Define available page size options
-  const pageSizeOptions = useMemo(() => [10, 25, 50, 100], []);
+// Regular expressions for date formats
+const formatRegex = {
+  "dd/mm/yyyy": /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/\d{4}$/,
+  "mm/dd/yyyy": /^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/\d{4}$/,
+  "yyyy/mm/dd": /^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$/,
+  "dd-mm-yyyy": /^(0?[1-9]|[12][0-9]|3[01])-(0?[1-9]|1[012])-\d{4}$/,
+  "mm-dd-yyyy": /^(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])-\d{4}$/,
+  "yyyy-mm-dd": /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/,
+  "dd.mm.yyyy": /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[012])\.\d{4}$/,
+  "mm.dd.yyyy": /^(0?[1-9]|1[012])\.(0?[1-9]|[12][0-9]|3[01])\.\d{4}$/,
+  "yyyy.mm.dd": /^\d{4}\.(0?[1-9]|1[012])\.(0?[1-9]|[12][0-9]|3[01])$/,
+  ISO: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$/,
+};
 
-  // State variables for filtering, sorting, and pagination
+const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
+  // State hooks for managing table data
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
   const [sortField, setSortField] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const pageSizeOptions = useMemo(() => [10, 25, 50, 100], []);
 
-  // Function to detect date format from a given date string
-  const detectDateFormat = useCallback((dateString) => {
-    // Regular expressions for common date formats
-    const formats = {
-      "dd/mm/yyyy": /^(0?[1-9]|[12][0-9]|3[01])\/(0?[1-9]|1[012])\/\d{4}$/,
-      "mm/dd/yyyy": /^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/\d{4}$/,
-      "yyyy/mm/dd": /^\d{4}\/(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])$/,
-      "dd-mm-yyyy": /^(0?[1-9]|[12][0-9]|3[01])-(0?[1-9]|1[012])-\d{4}$/,
-      "mm-dd-yyyy": /^(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])-\d{4}$/,
-      "yyyy-mm-dd": /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/,
-      "dd.mm.yyyy": /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[012])\.\d{4}$/,
-      "mm.dd.yyyy": /^(0?[1-9]|1[012])\.(0?[1-9]|[12][0-9]|3[01])\.\d{4}$/,
-      "yyyy.mm.dd": /^\d{4}\.(0?[1-9]|1[012])\.(0?[1-9]|[12][0-9]|3[01])$/,
-      ISO: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$/,
-    };
-    // Iterate through formats and return the detected format
-    for (const format in formats) {
-      if (formats[format].test(dateString)) {
-        return format;
+  // Function to check date format
+  const isDateFormat = useCallback(
+    (dateString) => {
+      for (const format in formatRegex) {
+        if (
+          formatRegex[format].test(dateString) &&
+          dateFormat.toLowerCase() === format
+        ) {
+          return format;
+        }
       }
-    }
-    return null;
-  }, []);
+      return null;
+    },
+    [dateFormat]
+  );
 
-  // Function to convert a date to a standardized format
+  // Function to convert date string to a standard format
   const convertDate = useCallback(
     (dateString) => {
-      const format = detectDateFormat(dateString);
+      const format = isDateFormat(dateString);
       if (!format) return null;
       const parts = dateString.split(/[-/.T:+]/);
       switch (format) {
+        // Conversion for different date formats
         case "dd/mm/yyyy":
         case "dd-mm-yyyy":
         case "dd.mm.yyyy":
@@ -70,41 +75,34 @@ const DataTablePlugin = React.memo(({ data, columns }) => {
           return dateString;
       }
     },
-    [detectDateFormat]
+    [isDateFormat]
   );
 
   // Function to compare values for sorting
   const compareValues = useCallback(
-    (a, b, field, sortOrder) => {
+    (a, b, field, order) => {
       if (!a[field] || !b[field]) return 0;
       const dateA = convertDate(a[field]);
       const dateB = convertDate(b[field]);
       if (dateA && dateB) {
-        return sortOrder === "asc"
+        return order === "asc"
           ? new Date(dateA) - new Date(dateB)
           : new Date(dateB) - new Date(dateA);
       }
       const valueA = a[field].toString().toLowerCase();
       const valueB = b[field].toString().toLowerCase();
-      return valueA < valueB
-        ? sortOrder === "asc"
-          ? -1
-          : 1
-        : valueA > valueB
-        ? sortOrder === "asc"
-          ? 1
-          : -1
-        : 0;
+      if (valueA < valueB) return order === "asc" ? -1 : 1;
+      if (valueA > valueB) return order === "asc" ? 1 : -1;
+      return 0;
     },
     [convertDate]
   );
 
-  // Reset current page when page size or search term changes
+  // Effects for resetting current page and filtering data
   useEffect(() => {
     setCurrentPage(0);
   }, [pageSize, searchTerm]);
 
-  // Filter and sort data when search term, sort field, or sort order changes
   useEffect(() => {
     const filtered = data
       .filter((item) =>
@@ -117,20 +115,18 @@ const DataTablePlugin = React.memo(({ data, columns }) => {
     setFilteredItems(filtered);
   }, [searchTerm, data, sortField, sortOrder, compareValues]);
 
-  // Calculate page count and items to show when filtered items or page size changes
+  // Memoization for page count and items to show
   const pageCount = useMemo(
     () => Math.ceil(filteredItems.length / pageSize),
     [filteredItems.length, pageSize]
   );
-
-  // Calculate items to show when current page changes
   const itemsToShow = useMemo(
     () =>
       filteredItems.slice(currentPage * pageSize, (currentPage + 1) * pageSize),
     [currentPage, pageSize, filteredItems]
   );
 
-  // Render table header with sorting icons
+  // Callback for handling sort changes
   const handleSort = useCallback(
     (field) => {
       const order = field === sortField && sortOrder === "asc" ? "desc" : "asc";
@@ -140,22 +136,25 @@ const DataTablePlugin = React.memo(({ data, columns }) => {
     [sortField, sortOrder]
   );
 
-  // Render table header with sorting icons
-  const renderHeader = useCallback(() => {
-    return columns.map((column) => (
-      <th key={column.data} onClick={() => handleSort(column.data)}>
-        {column.title}
-        {sortField === column.data && (
-          <i
-            className={`fas fa-sort-${sortOrder === "asc" ? "up" : "down"}`}
-          ></i>
-        )}
-        {sortField !== column.data && <i className="fas fa-sort"></i>}
-      </th>
-    ));
-  }, [columns, sortField, sortOrder, handleSort]);
+  // Function to render table headers
+  const renderHeader = useCallback(
+    () =>
+      columns.map((column) => (
+        <th key={column.data} onClick={() => handleSort(column.data)}>
+          {column.title}
+          {sortField === column.data ? (
+            <i
+              className={`fas fa-sort-${sortOrder === "asc" ? "up" : "down"}`}
+            ></i>
+          ) : (
+            <i className="fas fa-sort"></i>
+          )}
+        </th>
+      )),
+    [columns, sortField, sortOrder, handleSort]
+  );
 
-  // Render pagination buttons
+  // Function to render pagination buttons
   const renderPaginationButtons = useCallback(() => {
     let buttons = [];
     let startPage, endPage;
@@ -163,24 +162,16 @@ const DataTablePlugin = React.memo(({ data, columns }) => {
       startPage = 0;
       endPage = pageCount;
     } else {
-      if (currentPage < 4) {
-        startPage = 0;
-        endPage = 5;
-      } else if (currentPage > pageCount - 5) {
-        startPage = pageCount - 5;
-        endPage = pageCount;
-      } else {
-        startPage = currentPage - 1;
-        endPage = currentPage + 2;
-      }
+      startPage = Math.max(currentPage - 2, 0);
+      endPage = Math.min(startPage + 5, pageCount);
     }
     if (startPage > 0) {
       buttons.push(
         <button key="start" onClick={() => setCurrentPage(0)}>
           1
-        </button>
+        </button>,
+        <span key="ellipsis1">...</span>
       );
-      buttons.push(<span key="ellipsis1">...</span>);
     }
     for (let i = startPage; i < endPage; i++) {
       buttons.push(
@@ -194,8 +185,8 @@ const DataTablePlugin = React.memo(({ data, columns }) => {
       );
     }
     if (endPage < pageCount) {
-      buttons.push(<span key="ellipsis2">...</span>);
       buttons.push(
+        <span key="ellipsis2">...</span>,
         <button key="end" onClick={() => setCurrentPage(pageCount - 1)}>
           {pageCount}
         </button>
@@ -204,7 +195,7 @@ const DataTablePlugin = React.memo(({ data, columns }) => {
     return buttons;
   }, [currentPage, pageCount]);
 
-  // Render the DataTablePlugin component
+  // Main component rendering
   return (
     <>
       <div className="search-and-size">

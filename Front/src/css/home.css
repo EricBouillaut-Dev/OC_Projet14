@@ -11,9 +11,8 @@
 .home-actions {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 5px 0;
 }
-
 
 .home-body {
   flex-grow: 1;
@@ -22,11 +21,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* background: url('path_to_your_image') no-repeat center center; */
-  /* background-size: cover; */
 }
-
-
 
 .action-btn {
   background-color: #20bec4;
@@ -44,4 +39,3 @@
 .action-btn:hover {
   background-color: #2974a5;
 }
-
