@@ -14,7 +14,7 @@ const Header = () => {
             isActive ? "nav-link active-link" : "nav-link"
           }
         >
-          Add
+          Add employee
         </NavLink>
         <NavLink
           to="/employee-list"
@@ -22,7 +22,7 @@ const Header = () => {
             isActive ? "nav-link active-link" : "nav-link"
           }
         >
-          View
+          View employees
         </NavLink>
       </nav>
     </header>

@@ -16,6 +16,15 @@ const formatRegex = {
 };
 
 const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
+  // Check for valid dateFormat
+  if (
+    !dateFormat ||
+    typeof dateFormat !== "string" ||
+    dateFormat.trim() === ""
+  ) {
+    dateFormat = "dd/mm/yyyy";
+  }
+
   // State hooks for managing table data
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -140,14 +149,19 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
   const renderHeader = useCallback(
     () =>
       columns.map((column) => (
-        <th key={column.data} onClick={() => handleSort(column.data)}>
+        <th
+          key={column.data}
+          onClick={() => handleSort(column.data)}
+          role="columnheader"
+        >
           {column.title}
           {sortField === column.data ? (
             <i
+              aria-hidden="true"
               className={`fas fa-sort-${sortOrder === "asc" ? "up" : "down"}`}
             ></i>
           ) : (
-            <i className="fas fa-sort"></i>
+            <i aria-hidden="true" className="fas fa-sort"></i>
           )}
         </th>
       )),
@@ -200,10 +214,11 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
     <>
       <div className="search-and-size">
         <div className="page-size-selector">
-          Show
+          Afficher
           <select
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
+            aria-label="Nombre d'entrées à afficher par page"
           >
             {pageSizeOptions.map((size) => (
               <option key={size} value={size}>
@@ -211,20 +226,21 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
               </option>
             ))}
           </select>
-          entries
+          entrées
         </div>
         <div className="search-box">
-          <label htmlFor="search">Search:</label>
+          <label htmlFor="search">Recherche :</label>
           <input
             type="text"
             id="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Champ de recherche"
           />
         </div>
       </div>
       <div className="item-table-container">
-        <table className="item-table">
+        <table className="item-table" role="grid">
           <thead>
             <tr>{renderHeader()}</tr>
           </thead>
@@ -232,7 +248,10 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
             {itemsToShow.map((item, index) => (
               <tr key={item.id || `itemId-${index}`}>
                 {columns.map((column) => (
-                  <td key={`${item.id || `itemId-${index}`}-${column.data}`}>
+                  <td
+                    key={`${item.id || `itemId-${index}`}-${column.data}`}
+                    role="gridcell"
+                  >
                     {item[column.data]}
                   </td>
                 ))}
@@ -243,23 +262,25 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
       </div>
       <div className="pagination-container">
         <p>
-          Showing {Math.max(1, currentPage * pageSize + 1)} to{" "}
-          {Math.min(filteredItems.length, (currentPage + 1) * pageSize)} of{" "}
-          {filteredItems.length} entries
+          Affichage de {Math.max(1, currentPage * pageSize + 1)} à{" "}
+          {Math.min(filteredItems.length, (currentPage + 1) * pageSize)} sur{" "}
+          {filteredItems.length} entrées
         </p>
-        <div className="bloc-nav">
+        <div className="bloc-nav" role="navigation">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 0}
+            aria-label="Page précédente"
           >
-            Previous
+            Précédent
           </button>
           {renderPaginationButtons()}
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage >= pageCount - 1}
+            aria-label="Page suivante"
           >
-            Next
+            Suivant
           </button>
         </div>
       </div>
