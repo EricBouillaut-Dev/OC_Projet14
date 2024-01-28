@@ -1,6 +1,7 @@
-@import './home.css';
-@import './header.css';
-@import './footer.css';
-@import './employee-form.css';
-@import './employee-list.css';
-@import './modal.css';
+@import "./home.css";
+@import "./header.css";
+@import "./footer.css";
+@import "./employee-form.css";
+@import "./employee-list.css";
+@import "./modal.css";
+@import "../components/plugin/dataTablePlugin.css";

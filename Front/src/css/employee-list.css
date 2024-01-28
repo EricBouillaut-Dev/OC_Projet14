@@ -1,7 +1,6 @@
-.employee-list-container {
-  width: 100%;
-  max-width: 1200px; /* ou toute autre largeur maximale appropriée */
-  margin: auto;
-  padding: 20px;
-  box-sizing: border-box;
+.title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: auto;
 }

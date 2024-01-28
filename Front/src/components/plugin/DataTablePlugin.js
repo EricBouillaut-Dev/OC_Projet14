@@ -1,5 +1,10 @@
+import {
+  faSort,
+  faSortDown,
+  faSortUp,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import "./DataTablePlugin.css";
 
 // Regular expressions for date formats
 const formatRegex = {
@@ -154,19 +159,22 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
           onClick={() => handleSort(column.data)}
           role="columnheader"
         >
-          {column.title}
+          {column.title}{" "}
           {sortField === column.data ? (
-            <i
+            <FontAwesomeIcon
+              icon={sortOrder === "asc" ? faSortUp : faSortDown}
               aria-hidden="true"
-              className={`fas fa-sort-${sortOrder === "asc" ? "up" : "down"}`}
-            ></i>
+            />
           ) : (
-            <i aria-hidden="true" className="fas fa-sort"></i>
+            <FontAwesomeIcon icon={faSort} aria-hidden="true" />
           )}
         </th>
       )),
     [columns, sortField, sortOrder, handleSort]
   );
+
+  const baseColumnWidth = 150; // Base column width in pixels
+  const maxWidth = columns.length * baseColumnWidth;
 
   // Function to render pagination buttons
   const renderPaginationButtons = useCallback(() => {
@@ -211,14 +219,14 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
 
   // Main component rendering
   return (
-    <>
+    <div className="plugin-container" style={{ maxWidth: `${maxWidth}px` }}>
       <div className="search-and-size">
         <div className="page-size-selector">
-          Afficher
+          Show
           <select
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
-            aria-label="Nombre d'entrées à afficher par page"
+            aria-label="Page size selector"
           >
             {pageSizeOptions.map((size) => (
               <option key={size} value={size}>
@@ -226,16 +234,16 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
               </option>
             ))}
           </select>
-          entrées
+          entries
         </div>
         <div className="search-box">
-          <label htmlFor="search">Recherche :</label>
+          <label htmlFor="search">Search:</label>
           <input
             type="text"
             id="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            aria-label="Champ de recherche"
+            aria-label="Search box"
           />
         </div>
       </div>
@@ -262,29 +270,29 @@ const DataTablePlugin = React.memo(({ data, columns, dateFormat }) => {
       </div>
       <div className="pagination-container">
         <p>
-          Affichage de {Math.max(1, currentPage * pageSize + 1)} à{" "}
-          {Math.min(filteredItems.length, (currentPage + 1) * pageSize)} sur{" "}
-          {filteredItems.length} entrées
+          Showing {Math.max(1, currentPage * pageSize + 1)} to{" "}
+          {Math.min(filteredItems.length, (currentPage + 1) * pageSize)} of{" "}
+          {filteredItems.length} entries
         </p>
         <div className="bloc-nav" role="navigation">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 0}
-            aria-label="Page précédente"
+            aria-label="Previous page"
           >
-            Précédent
+            Previous
           </button>
           {renderPaginationButtons()}
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage >= pageCount - 1}
-            aria-label="Page suivante"
+            aria-label="Next page"
           >
-            Suivant
+            Next
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 });
 
