@@ -2,24 +2,22 @@
 
 This project is a full-stack application for HRNet, a human resources management system. It is divided into two main parts: the backend and the frontend.
 
-Using backend is not mandatory, you can use mocked data instead by setting the `backend` const in the App.js component to `false`:
-App.js line 11:
+Using backend is not mandatory, you can use mocked data instead by setting the const `backend` to `false` in the component Front/src/components/App.js --> line 11:
 
-    ```javascript
-    const backend = false;
-    ```
+```jsx
+const backend = false;
+```
 
 ## Table of Contents
 
 ## Backend
 
 You must have a MySQL database running on your machine with a database named `hrnet` to use the backend.
-Set the login/password to connect to database in the file src/db/sequelize.js:
-sequelize.js line 5:
+Set the login/password to connect to database in the file Back/src/db/sequelize.js --> line 5:
 
-    ```javascript
-    const sequelize = new Sequelize("HRnet", "root", "", {
-    ```
+```jsx
+const sequelize = new Sequelize("HRnet", "root", "", {
+```
 
 The table `users` will be created automatically if it does not exist and filled with the mock data in the file src/datas/users.json.
 
