@@ -1,8 +1,8 @@
 # HRNet Application
 
-This project is a full-stack application for HRNet, a human resources management system. It is divided into two main parts: the backend and the frontend.
+This project is a full-stack application for HRNet, a fictive human resources management system for the last Openclassroom project (Application developer - JavaScript React: project 14). It is divided into two main parts: the backend and the frontend.
 
-Using backend is not mandatory, you can use mocked data instead by setting the const `backend` to `false` in the component Front/src/components/App.js --> line 11:
+Using backend is not mandatory, you can use mocked data instead by setting the const `backend` to `false` (default setting) in the component Front/src/components/App.js --> line 11:
 
 ```jsx
 const backend = false;
