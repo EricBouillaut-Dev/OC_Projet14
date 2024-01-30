@@ -36,10 +36,10 @@ function EmployeeForm() {
       }
     });
 
-    // Gestion de l'erreur pour le champ 'state'
+    // Error handling for the 'state' field
     newErrorFields.state = !employee.state || employee.state === "Select";
 
-    // Gestion de l'erreur pour le champ 'department'
+    // Error handling for the 'department' field
     newErrorFields.department =
       !employee.department || employee.department === "Select";
 
@@ -47,11 +47,11 @@ function EmployeeForm() {
   }, [employee, touched]);
 
   const handleBlur = (e) => {
-    setTouched({ ...touched, [e.target.id]: true }); // Mettre à jour l'état touched lorsque le champ perd le focus
+    setTouched({ ...touched, [e.target.id]: true }); // Update the touched state when the field loses focus
   };
 
   const handleChange = (e) => {
-    setTouched({ ...touched, [e.target.id]: true }); // Mettre à jour l'état touched lorsque l'utilisateur interagit avec le champ
+    setTouched({ ...touched, [e.target.id]: true }); // Update the touched state when the user interacts with the field
     setEmployee({ ...employee, [e.target.id]: e.target.value });
   };
 
