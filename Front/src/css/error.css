@@ -1,0 +1,26 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100vh;
+  flex-basis: 100%;
+  color: red;
+}
+
+.error h2 {
+  font-size: 10rem;
+  margin-bottom: 0;
+}
+
+.error p {
+  font-size: 2rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+.error a {
+  font-size: 1.5rem;
+  text-decoration: underline;
+  color: rgb(68, 0, 255);
+}
