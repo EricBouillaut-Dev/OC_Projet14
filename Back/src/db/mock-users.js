@@ -1100,4 +1100,4 @@ const users = [
     zipCode: "98098",
   },
 ];
-export default users;
+module.exports = users;
